@@ -1,0 +1,73 @@
+1. How many burgers were ordered?
+
+select count(*)
+from runner_orders;
+
+2. How many unique customer orders were made?
+
+select count(DISTINCT(order_id))
+from customer_orders;
+
+3. How many successful orders were delivered by each runner?
+
+select runner_id,count(runner_id) from runner_orders
+where cancellation is null
+group by (runner_id);
+
+4. How many of each type of burger was delivered?
+
+select burger_names.burger_name,count(burger_names.burger_name)
+from burger_names
+join customer_orders on customer_orders.burger_id = burger_names.burger_id
+join runner_orders on customer_orders.order_id = runner_orders.order_id
+where runner_orders.cancellation is null
+group by burger_names.burger_name,runner_orders.cancellation
+
+5. How many Vegetarian and Meatlovers were ordered by each customer?
+
+select c.customer_id,b.burger_name,count(b.burger_name) as order_count
+from burger_names as b
+join customer_orders as c on c.burger_id = b.burger_id
+group by c.customer_id,b.burger_name
+order by c.customer_id
+
+6.What was the maximum number of burgers delivered in a single order?
+
+select c.order_id,count(c.burger_id) burger_count
+from 
+customer_orders as c 
+join runner_orders as r on r.order_id = c.order_id
+where r.cancellation is null
+group by c.order_id 
+order by burger_count desc
+limit 1
+
+8. For each customer, how many delivered burgers had at least 1 change and how many had no changes?
+
+select extract(hour from order_time) as hour_order,
+   count(order_id)
+from customer_orders
+group by hour_order
+
+9. How many runners signed up for each 1 week period?
+
+select count(runner_id) runner_signup,extract(week from registration_date) registration_week
+from burger_runner 
+group by registration_week 
+
+10. What was the average distance travelled for each customer?.
+
+note :- here distance is in charecter_varying..the answer is given below
+
+SELECT c.customer_id, AVG(r.distance) AS avg_dis
+FROM customer_orders AS c
+JOIN runner_orders AS r
+ ON c.order_id = r.order_id
+WHERE r.duration != 0
+GROUP BY c.customer_id;
+
+
+
+
+
+
